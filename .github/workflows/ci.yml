@@ -30,8 +30,12 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev \
-            python3 python3-pip
+            libgmp-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Configure CMake (AVX-512 OFF)
         run: |
@@ -126,8 +130,8 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install --prefer-binary -r requirements.txt
+          pip install --prefer-binary -r requirements-dev.txt
 
       - name: Run PyTest with Coverage
         run: |

@@ -102,7 +102,7 @@ private:
                          msg_count++;
                          // Batched Commit (Every 1000 messages)
                          if (msg_count % 1000 == 0) {
-                             consumer->commitAsync();
+                             consumer->commitAsync(NULL);
                          }
                     }
                     break;

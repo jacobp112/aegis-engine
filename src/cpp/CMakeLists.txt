@@ -126,6 +126,7 @@ link_directories(
 include_directories(
     /usr/local/include/libsnark
     ${GMP_INCLUDE_DIR}
+)
 
 # --- TARGETS ---
 

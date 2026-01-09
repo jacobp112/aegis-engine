@@ -27,7 +27,7 @@ using namespace libsnark;
 using namespace libff;
 
 // Define FieldT globally for Gadget usage
-using FieldT = libff::Fr<libsnark::default_r1cs_ppzksnark_pp>;
+using FieldT = libsnark::default_r1cs_ppzksnark_pp::scalar_field;
 
 // Circuit: Age Integrity Check
 // Proves: (CurrentYear - BirthYear) >= Threshold

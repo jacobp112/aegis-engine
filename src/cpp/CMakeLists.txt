@@ -41,9 +41,24 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(pugixml)
 
 # 2. Cryptography: libsnark (Real ZKP)
-find_package(gmp REQUIRED)
-find_package(libsnark REQUIRED)
-find_package(libff REQUIRED)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(GMP REQUIRED)
+
+# Fetch libff locally
+FetchContent_Declare(
+  libff
+  GIT_REPOSITORY https://github.com/scipr-lab/libff.git
+  GIT_TAG        v1.0.0
+)
+FetchContent_MakeAvailable(libff)
+
+# Fetch libsnark locally
+FetchContent_Declare(
+  libsnark
+  GIT_REPOSITORY https://github.com/scipr-lab/libsnark.git
+  GIT_TAG        v1.0.0
+)
+FetchContent_MakeAvailable(libsnark)
 
 # 3. Messaging: ZeroMQ & RdKafka (Enterprise Integration)
 # Using PkgConfig as a fallback if strict find_package fails, ensuring broad compatibility

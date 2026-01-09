@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package aegis;
+
+import "google/protobuf/timestamp.proto";
+
+// ISO 20022-aligned Service Definition
+service ScreeningService {
+  // Real-time screening (High Priority) - ISO 20022 pacs.008 style
+  rpc ScreenTransaction (ScreeningRequest) returns (ScreeningResponse) {}
+
+  // Batch screening (Lower Priority)
+  rpc BatchScreen (BatchRequest) returns (BatchResponse) {}
+}
+
+// Mimics ISO 20022 pacs.008 (Financial Institution Credit Transfer)
+message ScreeningRequest {
+  string msg_id = 1;          // Unique Message ID
+  PaymentInfo pmt_inf = 2;    // Payment Information
+  Debtor debtor = 3;          // Originator
+  Creditor creditor = 4;      // Beneficiary
+  // Compliance Context
+  string risk_context = 5;    // "CROSS_BORDER", "DOMESTIC"
+}
+
+message PaymentInfo {
+  double amount = 1;
+  string currency = 2;        // ISO 4217 (e.g., "USD")
+  google.protobuf.Timestamp value_date = 3;
+}
+
+message Debtor {
+  string name = 1;
+  string bic = 2;             // Bank Identifier Code
+  string iban = 3;            // Account Number
+  string country = 4;         // ISO 3166
+  google.protobuf.Timestamp dob = 5;
+}
+
+message Creditor {
+  string name = 1;
+  string bic = 2;
+  string iban = 3;
+  string country = 4;
+}
+
+message ScreeningResponse {
+  string msg_id = 1;
+  string status = 2;          // "CLEAR", "BLOCK", "INVESTIGATE"
+  string reason_code = 3;     // ISO Reason Code
+  repeated MatchDetail matches = 4;
+  double latency_ns = 5;
+
+  // XAI Reasoning
+  map<string, float> risk_factors = 6; // e.g. {"VELOCITY": 0.8, "GEO": 0.2}
+}
+
+message MatchDetail {
+  string list_id = 1;     // e.g. "OFAC-SDN"
+  string entity_id = 2;
+  int32 confidence_score = 3; // 0-100
+  string match_type = 4;  // "NAME_EXACT", "FUZZY", "DOB_MATCH"
+}
+
+message BatchRequest {
+  repeated ScreeningRequest requests = 1;
+}
+
+message BatchResponse {
+  repeated ScreeningResponse responses = 1;
+}

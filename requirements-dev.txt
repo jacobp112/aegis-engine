@@ -1,0 +1,23 @@
+# Project Aegis - Development & Test Dependencies
+
+# Include runtime dependencies
+-r requirements.txt
+
+# Testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-xdist>=3.0.0  # Parallel test execution
+
+# Type Checking
+mypy>=1.0.0
+
+# Linting
+ruff>=0.1.0
+black>=23.0.0
+
+# Docker SDK (for stress tests)
+docker>=6.0.0
+
+# Mocking
+responses>=0.22.0
+pytest-mock>=3.10.0

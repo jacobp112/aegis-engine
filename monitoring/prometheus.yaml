@@ -1,0 +1,67 @@
+# Project Aegis - Prometheus Configuration
+#
+# This configuration scrapes both the C++ core (9090) and Python bridge (9091)
+# for comprehensive full-stack observability.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+  # Attach these labels to all metrics
+  external_labels:
+    environment: 'production'
+    service: 'aegis'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load alerting rules
+rule_files:
+  - "alerts.yaml"
+
+# Scrape configurations
+scrape_configs:
+  # -------------------------------------------------------------------------
+  # C++ Core Metrics (Port 9090)
+  # -------------------------------------------------------------------------
+  # The HFT engine exposes:
+  # - aegis_ingress_tps
+  # - aegis_ring_buffer_usage
+  # - aegis_transactions_total
+  # - aegis_risk_blocks_total
+  # - aegis_drops_total
+  - job_name: 'aegis_cpp_core'
+    static_configs:
+      - targets: ['localhost:9090']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'aegis_.*'
+        action: keep
+
+  # -------------------------------------------------------------------------
+  # Python Bridge Metrics (Port 9091)
+  # -------------------------------------------------------------------------
+  # The AI Bridge exposes:
+  # - aegis_zkp_queue_depth
+  # - aegis_risk_score_histogram
+  # - aegis_zkp_triggers_total
+  # - aegis_bridge_transactions_total
+  # - aegis_bridge_processing_seconds
+  - job_name: 'aegis_python_bridge'
+    static_configs:
+      - targets: ['localhost:9091']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'aegis_.*'
+        action: keep
+
+  # -------------------------------------------------------------------------
+  # Prometheus Self-Monitoring
+  # -------------------------------------------------------------------------
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

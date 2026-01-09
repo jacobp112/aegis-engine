@@ -1,0 +1,111 @@
+# =============================================================================
+# Project Aegis - .gitignore
+# =============================================================================
+# Hybrid C++/Python/DPDK stack with ZKP artifacts
+# =============================================================================
+
+# --- C++ / CMake ---
+build/
+bin/
+lib/
+*.o
+*.a
+*.so
+*.dylib
+compile_commands.json
+.cache/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Project Aegis Specific ---
+
+# ZKP Artifacts (Keys should be injected, not committed)
+*.key
+*.bin
+*.sig
+proving_key.*
+# Exception: Verification key may be committed if public
+!verification_key.bin
+
+# Local Databases & Logs
+*.db
+*.sqlite
+*.log
+aegis_audit.jsonl
+aegis_zkp.db
+
+# Model weights (versioned separately or generated)
+# Uncomment if model_weights.json should be ignored:
+# model_weights.json
+
+# --- Secrets & Config (Safety net) ---
+secrets/
+certs/
+*.pem
+*.p12
+*.pfx
+.env
+.env.*
+!.env.example
+
+# HSM/PKCS#11 artifacts
+*.hsm
+*.token
+
+# --- Docker ---
+# Ignore local docker volumes but not compose files
+docker-volumes/
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# --- OS Generated ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# --- Temporary Files ---
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# --- Stress Test Artifacts ---
+stress_metrics.txt
+benchmark_results/
+
+# --- Coverage Reports ---
+coverage/
+*.gcov
+*.gcda
+*.gcno

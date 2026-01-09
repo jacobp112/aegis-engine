@@ -1,0 +1,130 @@
+# Project Aegis - Prometheus Alerting Rules
+# These are "Wake Up" alerts for critical failure modes
+
+groups:
+- name: aegis_critical
+  rules:
+    # =========================================================================
+    # CRITICAL: The "Death Spiral" Alert
+    # =========================================================================
+    # The C++ ring buffer is filling up, meaning the Python consumer is too
+    # slow or has crashed. This is the most important alert - it indicates
+    # the pipeline is backing up and will start dropping messages.
+    - alert: AegisIngestionStall
+      expr: aegis_ring_buffer_usage > 0.85
+      for: 1m
+      labels:
+        severity: critical
+        component: cpp_core
+      annotations:
+        summary: "C++ Ring Buffer filling up ({{ $value | humanizePercentage }})"
+        description: "Python consumer likely dead or slow. Check ai_bridge.py logs."
+        runbook_url: "https://wiki.internal/aegis/runbooks/ingestion-stall"
+
+    # =========================================================================
+    # WARNING: The "Load Shedding" Alert
+    # =========================================================================
+    # The ZKP queue hit its limit and we're dropping proof requests.
+    # This is expected under heavy load, but should be investigated.
+    - alert: AegisLoadShedding
+      expr: rate(aegis_drops_total[5m]) > 0
+      labels:
+        severity: warning
+        component: cpp_core
+      annotations:
+        summary: "System is shedding load to survive"
+        description: "ZKP Queue full. Dropping {{ $value | humanize }}/sec proof requests."
+        runbook_url: "https://wiki.internal/aegis/runbooks/load-shedding"
+
+    # =========================================================================
+    # CRITICAL: The "Security Panic" Alert
+    # =========================================================================
+    # Abnormally high number of blocked transactions could indicate:
+    # - A coordinated money laundering attack
+    # - A DDoS attack with malicious transactions
+    # - A bug in the risk model causing false positives
+    - alert: AegisMassBlockEvent
+      expr: rate(aegis_risk_blocks_total[1m]) > 100
+      labels:
+        severity: critical
+        component: risk_engine
+      annotations:
+        summary: "Mass block event detected ({{ $value | humanize }}/min)"
+        description: "Abnormal number of blocked transactions. Possible attack or model misconfiguration."
+        runbook_url: "https://wiki.internal/aegis/runbooks/mass-block"
+
+    # =========================================================================
+    # WARNING: ZKP Queue Depth Rising
+    # =========================================================================
+    # The ZKP queue is getting deep, indicating either:
+    # - High volume of suspicious transactions
+    # - Slow ZKP proof generation
+    - alert: AegisZkpQueueHigh
+      expr: aegis_zkp_queue_depth > 4000
+      for: 2m
+      labels:
+        severity: warning
+        component: python_bridge
+      annotations:
+        summary: "ZKP Queue depth critical ({{ $value }} pending)"
+        description: "Queue approaching 5000 limit. System will start dropping proofs soon."
+
+    # =========================================================================
+    # WARNING: TPS Drop
+    # =========================================================================
+    # Ingress TPS dropped significantly - could indicate upstream issue
+    - alert: AegisTPSDrop
+      expr: aegis_ingress_tps < 10 and aegis_ingress_tps > 0
+      for: 5m
+      labels:
+        severity: warning
+        component: ingress
+      annotations:
+        summary: "Low transaction throughput ({{ $value | humanize }} TPS)"
+        description: "TPS below normal threshold. Check Kafka/upstream connectivity."
+
+    # =========================================================================
+    # CRITICAL: No Transactions
+    # =========================================================================
+    # Complete silence - either no traffic or system is down
+    - alert: AegisNoTraffic
+      expr: aegis_ingress_tps == 0
+      for: 5m
+      labels:
+        severity: critical
+        component: ingress
+      annotations:
+        summary: "No transactions being processed"
+        description: "TPS is zero for 5+ minutes. Check system health and upstream."
+
+- name: aegis_business
+  rules:
+    # =========================================================================
+    # INFO: Block Rate Trending Up
+    # =========================================================================
+    # The percentage of blocked transactions is increasing - may need to
+    # review model weights
+    - alert: AegisBlockRateHigh
+      expr: |
+        (rate(aegis_risk_blocks_total[1h]) / rate(aegis_transactions_total[1h])) > 0.1
+      for: 30m
+      labels:
+        severity: info
+        component: risk_model
+      annotations:
+        summary: "Block rate above 10% ({{ $value | humanizePercentage }})"
+        description: "More than 10% of transactions being blocked. Review model_weights.json tuning."
+
+    # =========================================================================
+    # INFO: ZKP Trigger Rate High
+    # =========================================================================
+    # Lots of ZKP proofs being generated - may indicate attack pattern
+    - alert: AegisZkpTriggerRateHigh
+      expr: rate(aegis_zkp_triggers_total[5m]) > 50
+      for: 10m
+      labels:
+        severity: info
+        component: zkp
+      annotations:
+        summary: "High ZKP proof generation rate"
+        description: "{{ $value | humanize }} proofs/sec. May indicate coordinated activity."

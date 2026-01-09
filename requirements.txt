@@ -1,0 +1,34 @@
+# Project Aegis - Runtime Dependencies
+
+# Core
+numpy>=1.21.0
+
+# Database
+sqlalchemy>=2.0.0
+
+# Logging & Telemetry
+structlog>=21.0.0
+
+# Cryptography
+cryptography>=3.4.0
+pycryptodome>=3.10.0
+
+# Networking
+pyzmq>=22.0.0
+kafka-python>=2.0.0
+
+# Monitoring / Metrics
+prometheus-client>=0.17.0
+
+# gRPC (for Protobuf messages)
+grpcio>=1.50.0
+protobuf>=4.0.0
+
+# HSM/PKCS#11 (Optional - for production key management)
+# pkcs11>=0.7.0
+
+# Web Dashboard
+flask>=2.0.0
+
+# Blockchain/Ledger (Optional)
+# web3>=6.0.0

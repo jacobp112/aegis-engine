@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 1. C++ Core (High Performance)
+  aegis-core:
+    build: .
+    command: ./aegis_core --no-huge
+    volumes:
+      - shared_mem:/dev/shm
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+
+  # 2. AI Bridge (Python Intelegence)
+  aegis-brain:
+    build: .
+    command: python3 ai_bridge.py
+    volumes:
+      - shared_mem:/dev/shm
+    depends_on:
+      - aegis-core
+
+  # 3. pKYC Feed (Live Triggers)
+  aegis-pkyc:
+    build: .
+    command: python3 pkyc_feed.py
+    depends_on:
+      - aegis-brain
+
+  # 4. Dashboard (UI)
+  aegis-dashboard:
+    build: .
+    command: streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./aegis_audit.jsonl:/app/aegis_audit.jsonl # Live log view
+
+volumes:
+  shared_mem:

@@ -1,0 +1,8 @@
+{
+    "velocity_weight": 0.85,
+    "amount_weight": 0.05,
+    "structuring_weight": 0.1,
+    "velocity_threshold_1h": 5,
+    "structuring_threshold": 9000,
+    "baseline_risk": 0.05
+}

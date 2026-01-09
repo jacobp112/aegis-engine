@@ -30,7 +30,7 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev \
+            libgmp-dev libsnark-dev \
             libboost-all-dev \
             software-properties-common
 
@@ -93,7 +93,7 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev
+            libgmp-dev libsnark-dev
 
       - name: Verify AVX-512 Support
         run: |

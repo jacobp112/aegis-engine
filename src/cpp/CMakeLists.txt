@@ -57,20 +57,37 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(pugixml)
 
 # 2. Cryptography: libsnark (Real ZKP)
-# IMPORTANT: libsnark includes libff via submodules.
-# We MUST NOT fetch libff separately to avoid "duplicate target" errors.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(GMP REQUIRED)
 
-# Fetch libsnark (which will pull in libff)
-FetchContent_Declare(
-  libsnark
-  GIT_REPOSITORY https://github.com/scipr-lab/libsnark.git
-  GIT_TAG        master
-)
-# We use FetchContent_MakeAvailable for libsnark.
-# If libsnark's CMakeLists.txt adds libff, we are good.
-FetchContent_MakeAvailable(libsnark)
+# Try to find system libsnark first (since we install it in CI)
+find_path(LIBSNARK_INCLUDE_DIR libsnark/gadgetlib/gadget.hpp)
+find_library(LIBSNARK_LIBRARY snark)
+
+if(LIBSNARK_INCLUDE_DIR AND LIBSNARK_LIBRARY)
+    message(STATUS "[Aegis] Found system libsnark: ${LIBSNARK_LIBRARY}")
+    set(LIBSNARK_LIBRARIES ${LIBSNARK_LIBRARY})
+    # Ensure include directories are global or added to targets later
+    include_directories(${LIBSNARK_INCLUDE_DIR})
+else()
+    message(STATUS "[Aegis] System libsnark not found. Fetching from source...")
+    # Fetch libsnark (which will pull in libff)
+    FetchContent_Declare(
+      libsnark
+      GIT_REPOSITORY https://github.com/scipr-lab/libsnark.git
+      GIT_TAG        master
+    )
+    # We use FetchContent_MakeAvailable for libsnark.
+    # If libsnark's CMakeLists.txt adds libff, we are good.
+    FetchContent_MakeAvailable(libsnark)
+
+    # If using FetchContent, we need to know the target name.
+    # Usually it's 'snark' or 'libsnark'. We can assume targets are available.
+    # But to be safe for our linking below, we set variables if targets exist
+    if(TARGET snark)
+        set(LIBSNARK_LIBRARIES snark)
+    endif()
+endif()
 
 # 3. Messaging: ZeroMQ & RdKafka (Enterprise Integration)
 # Using PkgConfig as a fallback if strict find_package fails, ensuring broad compatibility

@@ -42,7 +42,7 @@ jobs:
 
       - name: Install libsnark (Source)
         run: |
-          sudo apt-get install -y libprocps-dev libssl-dev
+          sudo apt-get install -y libssl-dev
           git clone --recursive https://github.com/scipr-lab/libsnark.git
           cd libsnark
           mkdir build && cd build
@@ -109,7 +109,7 @@ jobs:
 
       - name: Install libsnark (Source)
         run: |
-          sudo apt-get install -y libprocps-dev libssl-dev
+          sudo apt-get install -y libssl-dev
           git clone --recursive https://github.com/scipr-lab/libsnark.git
           cd libsnark
           mkdir build && cd build

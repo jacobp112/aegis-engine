@@ -25,12 +25,12 @@ class DigitalAnalyst:
             logger.warning("Digital Analyst: Running in fallback mode (Default Weights).")
             # Default fallback weights if file missing
             self.weights = {
-                "velocity_weight": 0.6,
-                "amount_weight": 0.15,
-                "structuring_weight": 0.25,
-                "velocity_threshold_1h": 5,
-                "structuring_threshold": 9000,
-                "baseline_risk": 0.05
+                "velocity_weight": 0.8,
+                "amount_weight": 0.1,
+                "structuring_weight": 0.2,
+                "velocity_threshold_1h": 8,
+                "structuring_threshold": 9500,
+                "baseline_risk": 0.1
             }
 
     def _load_weights(self):

@@ -30,7 +30,7 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev
+            libgmp-dev libprocps-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5

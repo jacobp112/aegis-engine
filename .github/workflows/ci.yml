@@ -45,6 +45,9 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Clean Build Directory
+        run: rm -rf build
+
       - name: Configure CMake (AVX-512 OFF)
         run: |
           cmake -S src/cpp -B build \
@@ -99,6 +102,9 @@ jobs:
           else
             echo "⚠ AVX-512 NOT available - build will verify assembly only"
           fi
+
+      - name: Clean Build Directory
+        run: rm -rf build
 
       - name: Configure CMake (AVX-512 ON)
         run: |

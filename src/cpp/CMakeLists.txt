@@ -8,11 +8,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
 endif()
+if(POLICY CMP0002)
+  cmake_policy(SET CMP0002 NEW)
+endif()
 
 # Prevent dependencies from building their own tests/docs (fixes duplicate target names "doc", "check")
 set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(PERFORMANCE_TESTING OFF CACHE BOOL "" FORCE)
+# Specific flags for libsnark/libff to prevent them from building tests/docs if they use different variables
+set(WITH_SUPERCOP OFF CACHE BOOL "" FORCE)
+set(WITH_PROCPS OFF CACHE BOOL "" FORCE)
 
 # --- POLYMORPHIC DEPLOYMENT OPTIONS ---
 option(ENABLE_AVX512 "Enable AVX-512 optimizations for Enterprise Edition" AUTO)
@@ -51,23 +57,19 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(pugixml)
 
 # 2. Cryptography: libsnark (Real ZKP)
+# IMPORTANT: libsnark includes libff via submodules.
+# We MUST NOT fetch libff separately to avoid "duplicate target" errors.
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(GMP REQUIRED)
 
-# Fetch libff locally
-FetchContent_Declare(
-  libff
-  GIT_REPOSITORY https://github.com/scipr-lab/libff.git
-  GIT_TAG        master
-)
-FetchContent_MakeAvailable(libff)
-
-# Fetch libsnark locally
+# Fetch libsnark (which will pull in libff)
 FetchContent_Declare(
   libsnark
   GIT_REPOSITORY https://github.com/scipr-lab/libsnark.git
   GIT_TAG        master
 )
+# We use FetchContent_MakeAvailable for libsnark.
+# If libsnark's CMakeLists.txt adds libff, we are good.
 FetchContent_MakeAvailable(libsnark)
 
 # 3. Messaging: ZeroMQ & RdKafka (Enterprise Integration)

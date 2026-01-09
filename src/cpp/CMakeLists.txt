@@ -3,6 +3,7 @@ project(AegisEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Force CI Rebuild: Refreshed ZKP Types
 
 # Fix for "Target already exists" errors when linking to FetchContent targets
 if(POLICY CMP0079)

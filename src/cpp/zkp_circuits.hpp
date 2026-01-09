@@ -141,8 +141,8 @@ public:
         AgeCheckCircuit circuit(pb, curr, birth, thresh);
         circuit.generate_r1cs_constraints();
 
-        const r1cs_constraint_system<FieldT> constraint_system = pb.get_constraint_system();
-        r1cs_ppzksnark_keypair<PP> keypair = r1cs_ppzksnark_generator<PP>(constraint_system);
+        const libsnark::r1cs_constraint_system<FieldT> constraint_system = pb.get_constraint_system();
+        libsnark::r1cs_ppzksnark_keypair<PP> keypair = libsnark::r1cs_ppzksnark_generator<PP>(constraint_system);
 
         // Serialize
         std::ofstream pk_file(pk_path, std::ios::binary);
@@ -192,7 +192,7 @@ public:
              throw std::runtime_error("Constraint Failure: Inputs invalid (Underage or bad math).");
         }
 
-        Proof proof = r1cs_ppzksnark_prover<PP>(pk, pb.primary_input(), pb.auxiliary_input());
+        Proof proof = libsnark::r1cs_ppzksnark_prover<PP>(pk, pb.primary_input(), pb.auxiliary_input());
 
         std::stringstream ss;
         ss << proof;
@@ -211,7 +211,7 @@ public:
         primary_input.push_back(FieldT(current_year));
         primary_input.push_back(FieldT(threshold));
 
-        return r1cs_ppzksnark_verifier_strong_IC<PP>(vk, primary_input, proof);
+        return libsnark::r1cs_ppzksnark_verifier_strong_IC<PP>(vk, primary_input, proof);
     }
 };
 

@@ -212,17 +212,18 @@ jobs:
           echo "=== ZKP Sanity Check ==="
           echo "Testing with sample input..."
 
-          # Create test input (age=25, threshold=18)
-          echo '{"age": 25, "threshold": 18}' > /tmp/zkp_input.json
+          # 1. Trusted Setup (Generate Keys)
+          echo "Generating Trusted Setup Keys..."
+          ./build/zkp_prover setup /tmp/proving.key /tmp/verification.key
 
-          # Run prover (generates proof)
-          ./build/zkp_prover /tmp/zkp_input.json /tmp/proof.bin || {
-            echo "⚠ Prover requires trusted setup keys - skipping full validation"
-            exit 0
-          }
+          # 2. Run prover (generates proof)
+          # Usage: ./zkp_prover <pk_path> <current_year> <threshold> <birth_year>
+          ./build/zkp_prover /tmp/proving.key 2025 18 2000 > /tmp/proof.bin
 
-          # Run verifier (validates proof)
-          ./build/zkp_verifier /tmp/proof.bin && echo "✓ ZKP Proof Verified Successfully"
+          # 3. Use verify tool correctly
+          # Usage: ./zkp_verifier <proof_string> <current_year> <threshold> <vk_path>
+          PROOF_CONTENT=$(cat /tmp/proof.bin)
+          ./build/zkp_verifier "$PROOF_CONTENT" 2025 18 /tmp/verification.key && echo "✓ ZKP Proof Verified Successfully"
 
   # ============================================================================
   # JOB E: Resilience Stress Test

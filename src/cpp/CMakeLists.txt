@@ -121,7 +121,11 @@ include_directories(
 link_directories(
     ${ZeroMQ_LIBRARY_DIRS}
     ${RdKafka_LIBRARY_DIRS}
+    /usr/local/lib
 )
+include_directories(
+    /usr/local/include/libsnark
+    ${GMP_INCLUDE_DIR}
 
 # --- TARGETS ---
 

@@ -1,6 +1,8 @@
 /*
  * Project Aegis - ZKP Prover Service
- * Usage: ./zkp_prover <current_year> <threshold> <birth_year>
+ * Usage:
+ *   1. Setup: ./zkp_prover setup <pk_path> <vk_path>
+ *   2. Prove: ./zkp_prover <pk_path> <current_year> <threshold> <birth_year>
  * Output: Proof Hex string
  */
 
@@ -16,6 +18,18 @@ int main(int argc, char* argv[]) {
     } catch (const std::exception& e) {
         std::cerr << "FATAL: Failed to initialize crypto primitives: " << e.what() << std::endl;
         return 1;
+    }
+
+    std::string mode = argv[1];
+    if (mode == "setup") {
+        if (argc != 4) {
+            std::cerr << "Usage: " << argv[0] << " setup <pk_path> <vk_path>" << std::endl;
+            return 1;
+        }
+        std::string pk_path = argv[2];
+        std::string vk_path = argv[3];
+        ZkpManager::run_trusted_setup(pk_path, vk_path);
+        return 0;
     }
 
     if (argc != 5) {

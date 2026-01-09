@@ -48,7 +48,7 @@ find_package(GMP REQUIRED)
 FetchContent_Declare(
   libff
   GIT_REPOSITORY https://github.com/scipr-lab/libff.git
-  GIT_TAG        v1.0.0
+  GIT_TAG        master
 )
 FetchContent_MakeAvailable(libff)
 
@@ -56,7 +56,7 @@ FetchContent_MakeAvailable(libff)
 FetchContent_Declare(
   libsnark
   GIT_REPOSITORY https://github.com/scipr-lab/libsnark.git
-  GIT_TAG        v1.0.0
+  GIT_TAG        master
 )
 FetchContent_MakeAvailable(libsnark)
 

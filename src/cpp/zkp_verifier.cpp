@@ -7,6 +7,9 @@
  */
 
 #include "zkp_circuits.hpp"
+#include <libsnark/gadgetlib1/protoboard.hpp>
+#include <libsnark/gadgetlib1/gadget.hpp>
+#include <libff/common/utils.hpp>
 #include <iostream>
 #include <string>
 

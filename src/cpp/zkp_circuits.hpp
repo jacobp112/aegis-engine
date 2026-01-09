@@ -16,11 +16,11 @@
 #include <stdexcept>
 
 // Essential libsnark headers
-#include <libsnark/gadgetlib/gadget.hpp>
-#include <libsnark/gadgetlib/protoboard.hpp>
+#include <libsnark/gadgetlib1/gadget.hpp>
+#include <libsnark/gadgetlib1/protoboard.hpp>
 #include <libsnark/common/default_types/r1cs_ppzksnark_pp.hpp>
 #include <libsnark/zk_proof_systems/ppzksnark/r1cs_ppzksnark/r1cs_ppzksnark.hpp>
-#include <libsnark/gadgetlib/gadgets/basic_gadgets.hpp> // comparison_gadget
+#include <libsnark/gadgetlib1/gadgets/basic_gadgets.hpp> // comparison_gadget
 #include <libff/common/utils.hpp>
 
 using namespace libsnark;

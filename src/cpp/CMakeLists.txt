@@ -87,6 +87,14 @@ else()
     if(TARGET snark)
         set(LIBSNARK_LIBRARIES snark)
     endif()
+
+    # Explicitly include header paths for the fetched source interaction
+    # (Legacy support for code that doesn't rely solely on target includes)
+    FetchContent_GetProperties(libsnark)
+    include_directories(
+        ${libsnark_SOURCE_DIR}
+        ${libsnark_SOURCE_DIR}/depends/libff
+    )
 endif()
 
 # 3. Messaging: ZeroMQ & RdKafka (Enterprise Integration)
@@ -104,8 +112,6 @@ pkg_check_modules(RdKafka REQUIRED rdkafka++)
 # --- INCLUDES ---
 include_directories(
     ${GMP_INCLUDE_DIR}
-    ${LIBSNARK_INCLUDE_DIR}
-    ${LIBFF_INCLUDE_DIR}
     ${ZeroMQ_INCLUDE_DIRS}
     ${RdKafka_INCLUDE_DIRS}
     .

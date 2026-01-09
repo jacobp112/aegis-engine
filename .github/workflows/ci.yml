@@ -30,7 +30,14 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev libprocps-dev
+            libgmp-dev \
+            software-properties-common
+
+      - name: Install System Extras
+        run: |
+          sudo add-apt-repository universe
+          sudo apt-get update
+          sudo apt-get install -y libprocps-dev libprocps-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5

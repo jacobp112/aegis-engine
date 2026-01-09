@@ -65,8 +65,8 @@ class TestWeightLoading:
 
         assert analyst.model_ready == False
         # Should use fallback weights
-        assert analyst.weights["velocity_weight"] == 0.6
-        assert analyst.weights["structuring_weight"] == 0.25
+        assert analyst.weights["velocity_weight"] == 0.8
+        assert analyst.weights["structuring_weight"] == 0.2
 
     def test_fallback_weights_are_valid(self):
         analyst = DigitalAnalyst(weights_path="/nonexistent/path.json")
@@ -95,8 +95,8 @@ class TestVelocityCalculation:
         history = [{"timestamp": now - 100, "amount": 100}]
 
         score = analyst._calculate_velocities(history)
-        # 1 transaction / (5 * 2) = 0.1
-        assert 0.0 < score < 0.2
+        # 1 transaction / (8 * 2) = 0.0625
+        assert 0.0 < score < 0.1
 
     def test_high_velocity_maxes_at_one(self, analyst):
         now = time.time()
@@ -144,12 +144,12 @@ class TestStructuringDetection:
         assert score == 0.0
 
     def test_structuring_detected_near_threshold(self, analyst):
-        # Default threshold is 9000, reporting limit is 10000
-        score = analyst._detect_structuring(9500)
+        # Default threshold is 9500, reporting limit is 10000
+        score = analyst._detect_structuring(9600)
         assert score == 1.0
 
     def test_structuring_at_exact_threshold(self, analyst):
-        score = analyst._detect_structuring(9000)
+        score = analyst._detect_structuring(9500)
         assert score == 1.0
 
     def test_structuring_just_below_reporting_limit(self, analyst):

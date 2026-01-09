@@ -120,7 +120,7 @@ build-standard:
     - name: Configure (Standard Edition)
       run: |
         mkdir -p build && cd build
-        cmake -DENABLE_AVX512=OFF -DBUILD_TESTS=ON ..
+        cmake -DENABLE_AVX512=OFF -DBUILD_TESTS=ON ../src/cpp
 
     - name: Build
       run: cmake --build build -j$(nproc)

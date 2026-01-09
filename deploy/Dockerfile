@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     build-essential cmake \
     libgtest-dev \
     libzmq3-dev librdkafka-dev \
+    libgmp-dev libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Setup Hugepages (Runtime requirement, but prep dir here)
@@ -27,7 +28,7 @@ COPY . /app
 
 # 4. Build C++ Core
 RUN mkdir -p build && cd build && \
-    cmake -DENABLE_AVX512=OFF .. && \
+    cmake -DENABLE_AVX512=OFF ../src/cpp && \
     make -j$(nproc) && \
     cp aegis_engine ../aegis_engine && \
     cp zkp_prover ../zkp_prover && \
@@ -45,4 +46,4 @@ ENV AEGIS_SECRETS_MODE=env
 ENV AEGIS_NET_MODE=socket
 # Default to socket for container compatibility, user overrides to 'dpdk' if privileged
 
-CMD ["python3", "cpp_launcher.py"]
+CMD ["python3", "src/python/tools/cpp_launcher.py"]

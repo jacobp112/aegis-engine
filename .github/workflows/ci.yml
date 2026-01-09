@@ -30,7 +30,7 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev \
+            libgmp-dev libssl-dev \
             libboost-all-dev \
             software-properties-common
 

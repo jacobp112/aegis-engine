@@ -28,6 +28,10 @@ using namespace libff;
 
 // Define FieldT globally for Gadget usage
 using FieldT = libsnark::default_r1cs_ppzksnark_pp::scalar_field;
+using PP = libsnark::default_r1cs_ppzksnark_pp;
+using Proof = r1cs_ppzksnark_proof<PP>;
+using PK = r1cs_ppzksnark_proving_key<PP>;
+using VK = r1cs_ppzksnark_verification_key<PP>;
 
 // Circuit: Age Integrity Check
 // Proves: (CurrentYear - BirthYear) >= Threshold
@@ -114,10 +118,6 @@ public:
 
 class ZkpManager {
 public:
-    using PP = default_r1cs_ppzksnark_pp;
-    using PK = r1cs_ppzksnark_proving_key<PP>;
-    using VK = r1cs_ppzksnark_verification_key<PP>;
-    using Proof = r1cs_ppzksnark_proof<PP>;
 
     static void init() {
         PP::init_public_params();

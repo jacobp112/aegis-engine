@@ -116,8 +116,8 @@ public:
                 // Just proceed for now to avoid complexity in this demo file
             }
 
-            EntityState cold_state = DistrubutedCache::fetch_from_redis(key);
-            it = risk_map.emplace(key, cold_state).first;
+            // EntityState contains atomics and is not copyable. Construct in-place.
+            it = risk_map.try_emplace(key).first;
         }
 
         EntityState& state = it->second;

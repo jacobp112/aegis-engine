@@ -178,24 +178,20 @@ if(BUILD_TESTS)
         message(STATUS "[Aegis] AddressSanitizer ENABLED")
     endif()
 
-    # Test Executable
-    add_executable(aegis_tests
-        tests/cpp/test_ring_buffer.cpp
-        tests/cpp/test_iso_parser.cpp
-    )
+    # Test Ring Buffer
+    add_executable(test_ring_buffer tests/cpp/test_ring_buffer.cpp)
+    target_include_directories(test_ring_buffer PRIVATE ${CMAKE_SOURCE_DIR})
+    target_link_libraries(test_ring_buffer PRIVATE GTest::gtest_main pugixml::pugixml pthread)
 
-    target_include_directories(aegis_tests PRIVATE ${CMAKE_SOURCE_DIR})
+    # Test ISO Parser
+    add_executable(test_iso_parser tests/cpp/test_iso_parser.cpp)
+    target_include_directories(test_iso_parser PRIVATE ${CMAKE_SOURCE_DIR})
+    target_link_libraries(test_iso_parser PRIVATE GTest::gtest_main pugixml::pugixml pthread)
 
-    target_link_libraries(aegis_tests
-        PRIVATE
-        GTest::gtest_main
-        pugixml::pugixml
-        pthread
-    )
-
-    # Register tests with CTest
+    # Register tests
     include(GoogleTest)
-    gtest_discover_tests(aegis_tests)
+    gtest_discover_tests(test_ring_buffer)
+    gtest_discover_tests(test_iso_parser)
 
     message(STATUS "[Aegis] Test suite configured. Run with: ctest --output-on-failure")
 endif()

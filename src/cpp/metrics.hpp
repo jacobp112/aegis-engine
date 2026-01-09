@@ -16,6 +16,7 @@
 #define METRICS_HPP
 
 #include <atomic>
+#include <memory>
 #include <chrono>
 #include <string>
 #include <sstream>
@@ -252,15 +253,18 @@ private:
 };
 
 // Global server instance
-static MetricsServer g_metrics_server;
+static std::unique_ptr<MetricsServer> g_metrics_server;
 
 inline void init(int port = 9090) {
-    g_metrics_server = MetricsServer(port);
-    g_metrics_server.start();
+    g_metrics_server = std::make_unique<MetricsServer>(port);
+    g_metrics_server->start();
 }
 
 inline void shutdown() {
-    g_metrics_server.stop();
+    if (g_metrics_server) {
+        g_metrics_server->stop();
+        g_metrics_server.reset();
+    }
 }
 
 } // namespace Metrics

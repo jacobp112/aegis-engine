@@ -4,6 +4,16 @@ project(AegisEngine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Fix for "Target already exists" errors when linking to FetchContent targets
+if(POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
+endif()
+
+# Prevent dependencies from building their own tests/docs (fixes duplicate target names "doc", "check")
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(PERFORMANCE_TESTING OFF CACHE BOOL "" FORCE)
+
 # --- POLYMORPHIC DEPLOYMENT OPTIONS ---
 option(ENABLE_AVX512 "Enable AVX-512 optimizations for Enterprise Edition" AUTO)
 

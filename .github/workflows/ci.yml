@@ -39,7 +39,7 @@ jobs:
 
       - name: Configure CMake (AVX-512 OFF)
         run: |
-          cmake -B build \
+          cmake -S src/cpp -B build \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DENABLE_AVX512=OFF \
             -DBUILD_TESTS=ON
@@ -94,7 +94,7 @@ jobs:
 
       - name: Configure CMake (AVX-512 ON)
         run: |
-          cmake -B build \
+          cmake -S src/cpp -B build \
             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
             -DENABLE_AVX512=ON \
             -DBUILD_TESTS=ON
@@ -134,9 +134,11 @@ jobs:
           pip install --prefer-binary -r requirements-dev.txt
 
       - name: Run PyTest with Coverage
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src/python/aegis
         run: |
           pytest tests/python/ \
-            --cov=. \
+            --cov=src/python/aegis \
             --cov-report=xml \
             --cov-report=term-missing \
             -v

@@ -30,7 +30,7 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev libsnark-dev \
+            libgmp-dev \
             libboost-all-dev \
             software-properties-common
 
@@ -39,6 +39,18 @@ jobs:
           sudo add-apt-repository universe
           sudo apt-get update
           sudo apt-get install -y procps
+
+      - name: Install libsnark (Source)
+        run: |
+          sudo apt-get install -y libprocps-dev libssl-dev
+          git clone --recursive https://github.com/scipr-lab/libsnark.git
+          cd libsnark
+          mkdir build && cd build
+          cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_PROCPS=OFF -DWITH_SUPERCOP=OFF -DWITH_GMOCK=OFF ..
+          make -j$(nproc)
+          sudo make install
+          cd ../..
+          rm -rf libsnark
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -93,7 +105,19 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev libsnark-dev
+            libgmp-dev
+
+      - name: Install libsnark (Source)
+        run: |
+          sudo apt-get install -y libprocps-dev libssl-dev
+          git clone --recursive https://github.com/scipr-lab/libsnark.git
+          cd libsnark
+          mkdir build && cd build
+          cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_PROCPS=OFF -DWITH_SUPERCOP=OFF -DWITH_GMOCK=OFF ..
+          make -j$(nproc)
+          sudo make install
+          cd ../..
+          rm -rf libsnark
 
       - name: Verify AVX-512 Support
         run: |

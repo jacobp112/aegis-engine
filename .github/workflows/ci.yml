@@ -31,6 +31,7 @@ jobs:
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
             libgmp-dev \
+            libboost-all-dev \
             software-properties-common
 
       - name: Install System Extras

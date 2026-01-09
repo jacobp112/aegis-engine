@@ -18,18 +18,22 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    if (argc != 4) {
-        std::cerr << "Usage: " << argv[0] << " <current_year> <threshold> <birth_year>" << std::endl;
+    if (argc != 5) {
+        std::cerr << "Usage: " << argv[0] << " <pk_path> <current_year> <threshold> <birth_year>" << std::endl;
         return 1;
     }
 
-    long current_year = std::stol(argv[1]);
-    long threshold = std::stol(argv[2]);
-    long birth_year = std::stol(argv[3]);
+    std::string pk_path = argv[1];
+    long current_year = std::stol(argv[2]);
+    long threshold = std::stol(argv[3]);
+    long birth_year = std::stol(argv[4]);
 
     try {
-        // 2. Generate Proof using R1CS Constraints
-        std::string proof = ZkpManager::generate_proof(current_year, threshold, birth_year);
+        // 2. Load Proving Key
+        auto pk = ZkpManager::load_pk(pk_path);
+
+        // 3. Generate Proof using R1CS Constraints
+        std::string proof = ZkpManager::generate_proof(pk, current_year, threshold, birth_year);
 
         // 3. Output Proof to stdout
         std::cout << proof << std::endl;

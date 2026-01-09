@@ -125,8 +125,8 @@ class TestVelocityCalculation:
 
         score = analyst._calculate_velocities(history)
         # Only 2 recent transactions counted
-        # 2 / (5 * 2) = 0.2
-        assert 0.15 < score < 0.25
+        # 2 / (8 * 2) = 0.125
+        assert 0.12 <= score <= 0.13
 
 
 # =============================================================================

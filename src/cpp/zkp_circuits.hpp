@@ -24,14 +24,17 @@
 #include <libff/common/utils.hpp>
 
 using namespace libsnark;
-using namespace libff;
 
-// Define FieldT globally for Gadget usage
-using FieldT = libsnark::default_r1cs_ppzksnark_pp::scalar_field;
-using PP = libsnark::default_r1cs_ppzksnark_pp;
-using Proof = libsnark::r1cs_ppzksnark_proof<PP>;
-using PK = libsnark::r1cs_ppzksnark_proving_key<PP>;
-using VK = libsnark::r1cs_ppzksnark_verification_key<PP>;
+// Define PP first (pairing parameters)
+typedef libsnark::default_r1cs_ppzksnark_pp PP;
+
+// Define FieldT using libff::Fr (field elements) based on the pairing curve
+typedef libff::Fr<PP> FieldT;
+
+// Define proof system types
+typedef libsnark::r1cs_ppzksnark_proof<PP> Proof;
+typedef libsnark::r1cs_ppzksnark_proving_key<PP> PK;
+typedef libsnark::r1cs_ppzksnark_verification_key<PP> VK;
 
 // Circuit: Age Integrity Check
 // Proves: (CurrentYear - BirthYear) >= Threshold
@@ -108,7 +111,7 @@ public:
         this->pb.val(age) = age_val;
 
         // Fill gadget witness
-        cmp->generate_witness();
+        cmp->generate_r1cs_witness();
 
         // less_or_eq calculation matches the gadget logic: (A <= B)
         bool is_le = (thresh_val <= age_val);

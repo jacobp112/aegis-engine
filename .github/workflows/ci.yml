@@ -28,7 +28,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake \
-            libgtest-dev \
             libzmq3-dev librdkafka-dev \
             libgmp-dev libssl-dev \
             libboost-all-dev \
@@ -103,7 +102,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake \
-            libgtest-dev \
             libzmq3-dev librdkafka-dev \
             libgmp-dev libssl-dev
 

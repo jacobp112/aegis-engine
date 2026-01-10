@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Force CI Rebuild: Header inclusions update
 
+# Define the elliptic curve for libsnark
+add_definitions(-DCURVE_BN128)
+
 # Fix for "Target already exists" errors when linking to FetchContent targets
 if(POLICY CMP0079)
   cmake_policy(SET CMP0079 NEW)
@@ -163,18 +166,9 @@ if(BUILD_TESTS)
     message(STATUS "[Aegis] Building test suite...")
     enable_testing()
 
-    # Find GTest
-    find_package(GTest QUIET)
-    if(NOT GTest_FOUND)
-        # Fallback: Use FetchContent to download GTest
-        include(FetchContent)
-        FetchContent_Declare(
-            googletest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            GIT_TAG        v1.14.0
-        )
-        FetchContent_MakeAvailable(googletest)
-    endif()
+    # Use GTest from libsnark's dependencies (already fetched)
+    # libsnark bundles gtest in depends/gtest, so we'll use that
+    # The targets gtest, gtest_main, gmock, gmock_main are already available
 
     # AddressSanitizer for memory safety (optional, for Debug builds)
     option(ENABLE_ASAN "Enable AddressSanitizer for memory safety checks" OFF)
@@ -187,12 +181,12 @@ if(BUILD_TESTS)
     # Test Ring Buffer
     add_executable(test_ring_buffer tests/cpp/test_ring_buffer.cpp)
     target_include_directories(test_ring_buffer PRIVATE ${CMAKE_SOURCE_DIR})
-    target_link_libraries(test_ring_buffer PRIVATE GTest::gtest_main pugixml::pugixml pthread)
+    target_link_libraries(test_ring_buffer PRIVATE gtest_main pugixml::pugixml pthread)
 
     # Test ISO Parser
     add_executable(test_iso_parser tests/cpp/test_iso_parser.cpp)
     target_include_directories(test_iso_parser PRIVATE ${CMAKE_SOURCE_DIR})
-    target_link_libraries(test_iso_parser PRIVATE GTest::gtest_main pugixml::pugixml pthread)
+    target_link_libraries(test_iso_parser PRIVATE gtest_main pugixml::pugixml pthread)
 
     # Register tests
     include(GoogleTest)

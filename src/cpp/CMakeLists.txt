@@ -65,8 +65,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(GMP REQUIRED)
 
 # Try to find system libsnark first (since we install it in CI)
+# Try to find system libsnark first (since we install it in CI)
 find_path(LIBSNARK_INCLUDE_DIR libsnark/gadgetlib/gadget.hpp)
-find_library(LIBSNARK_LIBRARY snark)
+find_library(LIBSNARK_LIBRARY NAMES snark libsnark)
 
 if(LIBSNARK_INCLUDE_DIR AND LIBSNARK_LIBRARY)
     message(STATUS "[Aegis] Found system libsnark: ${LIBSNARK_LIBRARY}")
@@ -75,6 +76,18 @@ if(LIBSNARK_INCLUDE_DIR AND LIBSNARK_LIBRARY)
     include_directories(${LIBSNARK_INCLUDE_DIR})
 else()
     message(STATUS "[Aegis] System libsnark not found. Fetching from source...")
+
+    # Disable libsnark tests/docs to prevent pollution
+    # WE MUST SAVE the global state first so we don't disable Aegis tests
+    set(Aegis_BUILD_TESTING ${BUILD_TESTING})
+    set(Aegis_BUILD_TESTS ${BUILD_TESTS})
+
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(WITH_SUPERCOP OFF CACHE BOOL "" FORCE)
+    set(WITH_PROCPS OFF CACHE BOOL "" FORCE)
+    set(WITH_GMOCK OFF CACHE BOOL "" FORCE)
+
     # Fetch libsnark (which will pull in libff)
     FetchContent_Declare(
       libsnark
@@ -84,6 +97,10 @@ else()
     # We use FetchContent_MakeAvailable for libsnark.
     # If libsnark's CMakeLists.txt adds libff, we are good.
     FetchContent_MakeAvailable(libsnark)
+
+    # RESTORE global testing state for Aegis
+    set(BUILD_TESTING ${Aegis_BUILD_TESTING} CACHE BOOL "" FORCE)
+    set(BUILD_TESTS ${Aegis_BUILD_TESTS} CACHE BOOL "" FORCE)
 
     # If using FetchContent, we need to know the target name.
     # Usually it's 'snark' or 'libsnark'. We can assume targets are available.
@@ -95,11 +112,22 @@ else()
     # Explicitly include header paths for the fetched source interaction
     # (Legacy support for code that doesn't rely solely on target includes)
     FetchContent_GetProperties(libsnark)
-    include_directories(
-        ${libsnark_SOURCE_DIR}
-        ${libsnark_SOURCE_DIR}/depends/libff
-    )
+    if(libsnark_POPULATED)
+        include_directories(
+            ${libsnark_SOURCE_DIR}
+            ${libsnark_SOURCE_DIR}/depends/libff
+        )
+    endif()
 endif()
+
+# 4. Testing Framework: GoogleTest (Explicit Fetch)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        v1.14.0
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 # 3. Messaging: ZeroMQ & RdKafka (Enterprise Integration)
 # Using PkgConfig as a fallback if strict find_package fails, ensuring broad compatibility
@@ -166,9 +194,8 @@ if(BUILD_TESTS)
     message(STATUS "[Aegis] Building test suite...")
     enable_testing()
 
-    # Use GTest from libsnark's dependencies (already fetched)
-    # libsnark bundles gtest in depends/gtest, so we'll use that
-    # The targets gtest, gtest_main, gmock, gmock_main are already available
+    # Make GoogleTest available
+    FetchContent_MakeAvailable(googletest)
 
     # AddressSanitizer for memory safety (optional, for Debug builds)
     option(ENABLE_ASAN "Enable AddressSanitizer for memory safety checks" OFF)

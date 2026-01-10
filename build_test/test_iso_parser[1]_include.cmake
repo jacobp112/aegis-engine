@@ -1,0 +1,5 @@
+if(EXISTS "/home/runner/work/aegis-engine/aegis-engine/build_test/test_iso_parser[1]_tests.cmake")
+  include("/home/runner/work/aegis-engine/aegis-engine/build_test/test_iso_parser[1]_tests.cmake")
+else()
+  add_test(test_iso_parser_NOT_BUILT test_iso_parser_NOT_BUILT)
+endif()

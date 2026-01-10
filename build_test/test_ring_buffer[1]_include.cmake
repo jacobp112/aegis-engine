@@ -1,0 +1,5 @@
+if(EXISTS "/home/runner/work/aegis-engine/aegis-engine/build_test/test_ring_buffer[1]_tests.cmake")
+  include("/home/runner/work/aegis-engine/aegis-engine/build_test/test_ring_buffer[1]_tests.cmake")
+else()
+  add_test(test_ring_buffer_NOT_BUILT test_ring_buffer_NOT_BUILT)
+endif()

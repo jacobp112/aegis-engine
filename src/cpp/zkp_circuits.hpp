@@ -27,7 +27,7 @@ using namespace libsnark;
 using namespace libff;
 
 // Define FieldT globally for Gadget usage
-using FieldT = libsnark::default_r1cs_ppzksnark_pp::scalar_field;
+using FieldT = libsnark::default_r1cs_ppzksnark_pp::Fp_type;
 using PP = libsnark::default_r1cs_ppzksnark_pp;
 using Proof = libsnark::r1cs_ppzksnark_proof<PP>;
 using PK = libsnark::r1cs_ppzksnark_proving_key<PP>;
@@ -94,7 +94,7 @@ public:
         // Usually, is_adult might be public input, or we just enforce the check inside checks.
         // If we want the proof to imply "Validity", we constrain is_adult to 1.
         this->pb.add_r1cs_constraint(
-            r1cs_constraint<FieldT>(is_adult, 1, FieldT::one()),
+            r1cs_constraint<FieldT>(is_adult, 1, 1),
             "must_be_adult"
         );
     }
@@ -108,7 +108,7 @@ public:
         this->pb.val(age) = age_val;
 
         // Fill gadget witness
-        cmp->generate_witness();
+        cmp->generate_r1cs_witness();
 
         // less_or_eq calculation matches the gadget logic: (A <= B)
         bool is_le = (thresh_val <= age_val);

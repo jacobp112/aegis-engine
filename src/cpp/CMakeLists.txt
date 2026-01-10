@@ -46,6 +46,9 @@ else()
     add_definitions(-DAEGIS_STANDARD_MODE)
 endif()
 
+# Define the elliptic curve for libsnark/libff (required for ZKP support)
+add_definitions(-DCURVE_BN128)
+
 # --- DEPENDENCIES (Secure Supply Chain) ---
 
 # 1. XML Parsing: Pugixml (Industry Standard, Header-Only option available)

@@ -105,7 +105,7 @@ jobs:
             build-essential cmake \
             libgtest-dev \
             libzmq3-dev librdkafka-dev \
-            libgmp-dev
+            libgmp-dev libssl-dev
 
       - name: Install libsnark (Source)
         run: |

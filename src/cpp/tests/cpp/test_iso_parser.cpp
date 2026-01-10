@@ -52,7 +52,7 @@ TEST_F(IsoParserTest, ParseValidPacs008) {
     EXPECT_STREQ(payment.debtor_name, "Alice Smith");
     EXPECT_STREQ(payment.creditor_name, "Bob Jones");
     EXPECT_STREQ(payment.currency, "EUR");
-    EXPECT_DOUBLE_EQ(payment.amount, 1500.00);
+    EXPECT_EQ(payment.amount, 1500000000); // 1500.00 * 10^6
     EXPECT_TRUE(payment.valid_schema);
 }
 
@@ -81,7 +81,7 @@ TEST_F(IsoParserTest, ParseValidFIToFI) {
 
     EXPECT_STREQ(payment.uetr, "TXN-2024-001");
     EXPECT_STREQ(payment.currency, "USD");
-    EXPECT_DOUBLE_EQ(payment.amount, 50000.00);
+    EXPECT_EQ(payment.amount, 50000000000); // 50000.00 * 10^6
 }
 
 TEST_F(IsoParserTest, ParseGBPCurrency) {
@@ -272,7 +272,7 @@ TEST_F(IsoParserTest, HandleMinimalValidPayment) {
     </PmtInf></CstmrCdtTrfinitn></Document>)";
 
     EXPECT_TRUE(IsoParser::parse(xml, strlen(xml), payment));
-    EXPECT_DOUBLE_EQ(payment.amount, 0.01);
+    EXPECT_EQ(payment.amount, 10000); // 0.01 * 10^6
 }
 
 int main(int argc, char **argv) {

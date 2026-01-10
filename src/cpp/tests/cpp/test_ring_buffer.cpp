@@ -109,7 +109,7 @@ TEST(RingBufferPaymentTest, PaymentDataPushPop) {
     strncpy(payment.creditor_name, "Bob", 63);
     strncpy(payment.currency, "EUR", 3);
     strncpy(payment.uetr, "550e8400-e29b-41d4-a716-446655440000", 36);
-    payment.amount = 1000.50;
+    payment.amount = 1000500000; // 1000.50 EUR in micros
     payment.valid_schema = true;
 
     EXPECT_TRUE(payment_buffer.push(payment));
@@ -120,7 +120,7 @@ TEST(RingBufferPaymentTest, PaymentDataPushPop) {
     EXPECT_STREQ(result.debtor_name, "Alice");
     EXPECT_STREQ(result.creditor_name, "Bob");
     EXPECT_STREQ(result.currency, "EUR");
-    EXPECT_DOUBLE_EQ(result.amount, 1000.50);
+    EXPECT_EQ(result.amount, 1000500000);
     EXPECT_TRUE(result.valid_schema);
 }
 

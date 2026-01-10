@@ -27,11 +27,11 @@ using namespace libsnark;
 using namespace libff;
 
 // Define FieldT globally for Gadget usage
-using FieldT = libsnark::default_r1cs_ppzksnark_pp::scalar_field;
-using PP = libsnark::default_r1cs_ppzksnark_pp;
-using Proof = libsnark::r1cs_ppzksnark_proof<PP>;
-using PK = libsnark::r1cs_ppzksnark_proving_key<PP>;
-using VK = libsnark::r1cs_ppzksnark_verification_key<PP>;
+typedef Fr<default_r1cs_ppzksnark_pp> FieldT;
+using PP = default_r1cs_ppzksnark_pp;
+using Proof = r1cs_ppzksnark_proof<PP>;
+using PK = r1cs_ppzksnark_proving_key<PP>;
+using VK = r1cs_ppzksnark_verification_key<PP>;
 
 // Circuit: Age Integrity Check
 // Proves: (CurrentYear - BirthYear) >= Threshold
@@ -108,7 +108,7 @@ public:
         this->pb.val(age) = age_val;
 
         // Fill gadget witness
-        cmp->generate_witness();
+        cmp->generate_r1cs_witness();
 
         // less_or_eq calculation matches the gadget logic: (A <= B)
         bool is_le = (thresh_val <= age_val);
@@ -141,8 +141,8 @@ public:
         AgeCheckCircuit circuit(pb, curr, birth, thresh);
         circuit.generate_r1cs_constraints();
 
-        const libsnark::r1cs_constraint_system<FieldT> constraint_system = pb.get_constraint_system();
-        libsnark::r1cs_ppzksnark_keypair<PP> keypair = libsnark::r1cs_ppzksnark_generator<PP>(constraint_system);
+        const r1cs_constraint_system<FieldT> constraint_system = pb.get_constraint_system();
+        r1cs_ppzksnark_keypair<PP> keypair = r1cs_ppzksnark_generator<PP>(constraint_system);
 
         // Serialize
         std::ofstream pk_file(pk_path, std::ios::binary);
@@ -192,7 +192,7 @@ public:
              throw std::runtime_error("Constraint Failure: Inputs invalid (Underage or bad math).");
         }
 
-        Proof proof = libsnark::r1cs_ppzksnark_prover<PP>(pk, pb.primary_input(), pb.auxiliary_input());
+        Proof proof = r1cs_ppzksnark_prover<PP>(pk, pb.primary_input(), pb.auxiliary_input());
 
         std::stringstream ss;
         ss << proof;
@@ -211,7 +211,7 @@ public:
         primary_input.push_back(FieldT(current_year));
         primary_input.push_back(FieldT(threshold));
 
-        return libsnark::r1cs_ppzksnark_verifier_strong_IC<PP>(vk, primary_input, proof);
+        return r1cs_ppzksnark_verifier_strong_IC<PP>(vk, primary_input, proof);
     }
 };
 

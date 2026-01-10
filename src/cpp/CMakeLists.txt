@@ -142,6 +142,7 @@ target_link_libraries(aegis_engine
 
 # The ZKP Prover (Microservice)
 add_executable(zkp_prover zkp_prover.cpp)
+target_compile_definitions(zkp_prover PRIVATE CURVE_ALT_BN128)
 target_link_libraries(zkp_prover
     ${LIBSNARK_LIBRARIES}
     ${LIBFF_LIBRARIES}
@@ -150,6 +151,7 @@ target_link_libraries(zkp_prover
 
 # The ZKP Verifier (Microservice)
 add_executable(zkp_verifier zkp_verifier.cpp)
+target_compile_definitions(zkp_verifier PRIVATE CURVE_ALT_BN128)
 target_link_libraries(zkp_verifier
     ${LIBSNARK_LIBRARIES}
     ${LIBFF_LIBRARIES}

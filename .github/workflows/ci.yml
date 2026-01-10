@@ -105,6 +105,7 @@ jobs:
             libzmq3-dev librdkafka-dev \
             libgmp-dev libssl-dev
 
+      # Note: Ideally libsnark should be pre-installed on self-hosted runners to save time
       - name: Install libsnark (Source)
         run: |
           sudo apt-get install -y libssl-dev
@@ -186,7 +187,7 @@ jobs:
           path: coverage.xml
 
   # ============================================================================
-  # JOB D: ZKP Sanity Check
+  # JOB D: ZKP Sanity Check (FIXED)
   # ============================================================================
   test-zkp:
     name: "Test: ZKP Circuits (LibSnark)"
@@ -195,6 +196,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # FIX: Install Runtime Libraries (Missing in original)
+      # These are required because the binaries were linked dynamically in Job A
+      - name: Install Runtime Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libzmq3-dev librdkafka-dev \
+            libgmp-dev libssl-dev \
+            libboost-program-options-dev libboost-system-dev
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
@@ -219,12 +230,16 @@ jobs:
           ./build/zkp_prover /tmp/proving.key 2025 18 2000 > /tmp/proof.bin
 
           # 3. Use verify tool correctly
-          # Usage: ./zkp_verifier <proof_string> <current_year> <threshold> <vk_path>
-          PROOF_CONTENT=$(cat /tmp/proof.bin)
-          ./build/zkp_verifier "$PROOF_CONTENT" 2025 18 /tmp/verification.key && echo "✓ ZKP Proof Verified Successfully"
+          # FIX: Pass file path instead of raw string to avoid "Argument list too long" errors
+          if [ -f /tmp/proof.bin ]; then
+            ./build/zkp_verifier /tmp/proof.bin 2025 18 /tmp/verification.key && echo "✓ ZKP Proof Verified Successfully"
+          else
+            echo "❌ Proof file generation failed"
+            exit 1
+          fi
 
   # ============================================================================
-  # JOB E: Resilience Stress Test
+  # JOB E: Resilience Stress Test (FIXED)
   # ============================================================================
   test-stress:
     name: "Test: Resilience Stress Test (10k Messages)"
@@ -233,6 +248,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # FIX: Download the engine binary (Missing in original)
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: aegis-standard-build
+          path: build/
+
+      - name: Grant Execute Permissions
+        run: chmod +x build/aegis_engine
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -247,6 +272,7 @@ jobs:
         run: docker build -t aegis-sidecar .
 
       - name: Run Stress Test
+        # Ensure stress_test.py knows where to find ../build/aegis_engine
         run: |
           python tests/stress_test.py
         timeout-minutes: 10
@@ -263,12 +289,28 @@ jobs:
     steps:
       - name: Check All Jobs
         run: |
+          # Check Standard Build
           if [[ "${{ needs.build-standard.result }}" != "success" ]]; then
             echo "❌ Standard build failed"
             exit 1
           fi
+
+          # Check Python Tests
           if [[ "${{ needs.test-python.result }}" != "success" ]]; then
             echo "❌ Python tests failed"
             exit 1
           fi
+
+          # Check ZKP Tests (Added)
+          if [[ "${{ needs.test-zkp.result }}" != "success" ]]; then
+            echo "❌ ZKP tests failed"
+            exit 1
+          fi
+
+          # Check Stress Tests (Added)
+          if [[ "${{ needs.test-stress.result }}" != "success" ]]; then
+            echo "❌ Stress tests failed"
+            exit 1
+          fi
+
           echo "✓ All critical CI jobs passed"

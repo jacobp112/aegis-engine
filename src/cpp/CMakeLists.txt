@@ -17,7 +17,7 @@ if(POLICY CMP0002)
 endif()
 
 # Prevent dependencies from building their own tests/docs (fixes duplicate target names "doc", "check")
-set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(BUILD_TESTING ON CACHE BOOL "" FORCE)
 set(BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(PERFORMANCE_TESTING OFF CACHE BOOL "" FORCE)
 # Specific flags for libsnark/libff to prevent them from building tests/docs if they use different variables

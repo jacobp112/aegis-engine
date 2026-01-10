@@ -113,7 +113,7 @@ jobs:
           git clone --recursive https://github.com/scipr-lab/libsnark.git
           cd libsnark
           mkdir build && cd build
-          cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_PROCPS=OFF -DWITH_SUPERCOP=OFF -DWITH_GMOCK=OFF ..
+          cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DWITH_PROCPS=OFF -DWITH_SUPERCOP=OFF -DWITH_GMOCK=OFF -DBUILD_TESTS=ON ..
           make -j$(nproc)
           sudo make install
           cd ../..

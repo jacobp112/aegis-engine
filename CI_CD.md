@@ -215,7 +215,12 @@ test-stress:
     - uses: actions/checkout@v4
 
     - name: Start Aegis Stack
-      run: docker-compose up -d
+      run: |
+        # Build image using the correct Dockerfile path
+        docker build -f deploy/Dockerfile -t aegis-sidecar .
+
+        # Start services using the deployment compose file
+        docker-compose -f deploy/docker-compose.yml up -d
 
     - name: Run Stress Test
       run: |
@@ -287,11 +292,17 @@ security-zkp:
 
     - name: Run ZKP Round-Trip Test
       run: |
-        # Generate a test proof
-        ./build/zkp_prover --test-mode --output /tmp/proof.bin
+        # 1. Trusted Setup (Generates pk.bin and vk.bin)
+        ./build/zkp_prover setup build/pk.bin build/vk.bin
 
-        # Verify the proof
-        ./build/zkp_verifier --proof /tmp/proof.bin
+        # 2. Generate Proof (User: 2000, Current: 2024, Threshold: 18) -> Valid
+        # Output is the proof string, save it to a file
+        ./build/zkp_prover build/pk.bin 2024 18 2000 > proof.txt
+
+        # 3. Verify Proof
+        # Verifier expects the PROOF STRING as the first argument, not a file path
+        PROOF_STR=$(cat proof.txt)
+        ./build/zkp_verifier "$PROOF_STR" 2024 18 build/vk.bin
 
         echo "ZKP round-trip verification PASSED"
 ```

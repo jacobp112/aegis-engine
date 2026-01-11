@@ -3,7 +3,9 @@ version: '3.8'
 services:
   # 1. C++ Core (High Performance)
   aegis-core:
-    build: .
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
     command: ./aegis_core --no-huge
     volumes:
       - shared_mem:/dev/shm
@@ -14,7 +16,9 @@ services:
 
   # 2. AI Bridge (Python Intelegence)
   aegis-brain:
-    build: .
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
     command: python3 ai_bridge.py
     volumes:
       - shared_mem:/dev/shm
@@ -23,14 +27,18 @@ services:
 
   # 3. pKYC Feed (Live Triggers)
   aegis-pkyc:
-    build: .
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
     command: python3 pkyc_feed.py
     depends_on:
       - aegis-brain
 
   # 4. Dashboard (UI)
   aegis-dashboard:
-    build: .
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
     command: streamlit run dashboard.py --server.port 8501 --server.address 0.0.0.0
     ports:
       - "8501:8501"

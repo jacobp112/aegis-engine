@@ -235,22 +235,20 @@ jobs:
           echo "=== ZKP Sanity Check ==="
           echo "Testing with sample input..."
 
-          # 1. Trusted Setup (Generate Keys)
+          # 1. Trusted Setup (Generates pk.bin and vk.bin)
           echo "Generating Trusted Setup Keys..."
-          ./build/zkp_prover setup /tmp/proving.key /tmp/verification.key
+          ./build/zkp_prover setup build/pk.bin build/vk.bin
 
-          # 2. Run prover (generates proof)
-          # Usage: ./zkp_prover <pk_path> <current_year> <threshold> <birth_year>
-          ./build/zkp_prover /tmp/proving.key 2025 18 2000 > /tmp/proof.bin
+          # 2. Generate Proof (User: 2000, Current: 2024, Threshold: 18) -> Valid
+          # Output is the proof string, save it to a file
+          echo "Generating Proof..."
+          ./build/zkp_prover build/pk.bin 2024 18 2000 > proof.txt
 
-          # 3. Use verify tool correctly
-          # FIX: Pass file path instead of raw string to avoid "Argument list too long" errors
-          if [ -f /tmp/proof.bin ]; then
-            ./build/zkp_verifier /tmp/proof.bin 2025 18 /tmp/verification.key && echo "✓ ZKP Proof Verified Successfully"
-          else
-            echo "❌ Proof file generation failed"
-            exit 1
-          fi
+          # 3. Verify Proof
+          # Verifier expects the PROOF STRING as the first argument, not a file path
+          echo "Verifying Proof..."
+          PROOF_STR=$(cat proof.txt)
+          ./build/zkp_verifier "$PROOF_STR" 2024 18 build/vk.bin && echo "✓ ZKP Proof Verified Successfully"
 
   # ============================================================================
   # JOB E: Resilience Stress Test (FIXED)
@@ -283,11 +281,13 @@ jobs:
           pip install pyzmq docker
 
       - name: Build Docker Image
-        run: docker build -t aegis-sidecar .
+        run: docker build -f deploy/Dockerfile -t aegis-sidecar .
 
       - name: Run Stress Test
         # Ensure stress_test.py knows where to find ../build/aegis_engine
+        # Start services using the deployment compose file
         run: |
+          docker-compose -f deploy/docker-compose.yml up -d
           python tests/stress_test.py
         timeout-minutes: 10
 

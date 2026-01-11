@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Setup Hugepages (Runtime requirement, but prep dir here)
-RUN mkdir -rho /mnt/huge
+RUN mkdir -p /mnt/huge
 
 # 3. Copy Application
 WORKDIR /app

@@ -79,11 +79,9 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: aegis-standard-build
-          path: |
-            build/aegis_engine
-            build/zkp_prover
-            build/zkp_verifier
+          name: aegis-standard
+          path: build/
+          include-hidden-files: true
 
   # ============================================================================
   # JOB B: HFT Build (Enterprise Edition)
@@ -149,6 +147,12 @@ jobs:
           cd build
           ctest --output-on-failure
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: aegis-enterprise
+          path: build/
+
   # ============================================================================
   # JOB C: Python Tests (PyTest)
   # ============================================================================
@@ -210,7 +214,7 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: aegis-standard-build
+          name: aegis-standard
           path: build/
 
       - name: Make Executables Runnable
@@ -253,7 +257,7 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: aegis-standard-build
+          name: aegis-standard
           path: build/
 
       - name: Grant Execute Permissions

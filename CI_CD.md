@@ -129,7 +129,8 @@ build-standard:
       uses: actions/upload-artifact@v4
       with:
         name: aegis-standard
-        path: build/aegis_engine
+        path: build/
+        include-hidden-files: true
 ```
 
 ### Enterprise Build (AVX-512)
@@ -157,7 +158,7 @@ build-enterprise:
       uses: actions/upload-artifact@v4
       with:
         name: aegis-enterprise
-        path: build/aegis_engine
+        path: build/
 ```
 
 ---

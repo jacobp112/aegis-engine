@@ -76,6 +76,11 @@ jobs:
         env:
           ASAN_OPTIONS: detect_leaks=1:abort_on_error=1
 
+      - name: Sanitize Build Directory
+        run: |
+          # Remove libsnark/libfqfft profiling directories containing colons (e.g. "03:04")
+          find build -name "*:*" -prune -exec rm -rf {} +
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -146,6 +151,11 @@ jobs:
         run: |
           cd build
           ctest -R "^Aegis\." --output-on-failure
+
+      - name: Sanitize Build Directory
+        run: |
+          # Remove libsnark/libfqfft profiling directories containing colons (e.g. "03:04")
+          find build -name "*:*" -prune -exec rm -rf {} +
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4

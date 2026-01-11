@@ -125,6 +125,10 @@ build-standard:
     - name: Build
       run: cmake --build build -j$(nproc)
 
+    - name: Sanitize Build Directory
+      run: |
+        find build -name "*:*" -prune -exec rm -rf {} +
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:

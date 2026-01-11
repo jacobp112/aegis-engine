@@ -27,7 +27,7 @@ WORKDIR /app
 COPY . /app
 
 # 4. Build C++ Core
-RUN mkdir -p build && cd build && \
+RUN rm -rf build && mkdir -p build && cd build && \
     cmake -DENABLE_AVX512=OFF ../src/cpp && \
     make -j$(nproc) && \
     cp aegis_engine ../aegis_engine && \

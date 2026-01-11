@@ -1,0 +1,14 @@
+# Ignore build artifacts
+build/
+cmake-build-debug/
+.cache/
+__pycache__/
+*.pyc
+
+# Ignore git metadata
+.git/
+.gitignore
+
+# Ignore secrets and env files
+.env
+secrets/

@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libgtest-dev \
     libzmq3-dev librdkafka-dev \
     libgmp-dev libssl-dev \
+    git pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # 2. Setup Hugepages (Runtime requirement, but prep dir here)

@@ -183,7 +183,7 @@ test-unit:
     - name: Run C++ Tests
       run: |
         cd build
-        ctest --output-on-failure
+        ctest -R "^Aegis\." --output-on-failure
 
     - name: Run Python Tests
       run: |

@@ -189,6 +189,6 @@ if(BUILD_TESTS)
 
     # Auto-discover
     include(GoogleTest)
-    gtest_discover_tests(test_ring_buffer)
-    gtest_discover_tests(test_iso_parser)
+    gtest_discover_tests(test_ring_buffer TEST_PREFIX "Aegis.")
+    gtest_discover_tests(test_iso_parser TEST_PREFIX "Aegis.")
 endif()

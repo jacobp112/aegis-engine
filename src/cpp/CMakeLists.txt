@@ -167,14 +167,18 @@ option(BUILD_TESTS "Build test suite with GTest" OFF)
 if(BUILD_TESTS)
     enable_testing()
 
-    FetchContent_Declare(
-      googletest
-      GIT_REPOSITORY https://github.com/google/googletest.git
-      GIT_TAG        v1.14.0
-    )
-    # Prevent GTest from overriding parent compiler flags (Windows specific, but good practice)
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
+    if(NOT TARGET gtest)
+        FetchContent_Declare(
+          googletest
+          GIT_REPOSITORY https://github.com/google/googletest.git
+          GIT_TAG        v1.14.0
+        )
+        # Prevent GTest from overriding parent compiler flags (Windows specific, but good practice)
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(googletest)
+    else()
+        message(STATUS "[Aegis] Using existing gtest target provided by libsnark.")
+    endif()
 
     # Unit Tests
     add_executable(test_ring_buffer tests/cpp/test_ring_buffer.cpp)
